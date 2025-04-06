@@ -358,7 +358,7 @@
         function initGroups() {
             const container = document.getElementById('groups');
             container.innerHTML = groups.map((group, index) => {
-                const percentage = (group.score / 20 * 100).toFixed(1);
+                const percentage = (group.score / 10 * 100).toFixed(1);
                 return `
                 <div class="group">
                     <h2>${group.name}</h2>
@@ -367,7 +367,7 @@
                             <i class="fas fa-futbol football"></i>
                         </div>
                     </div>
-                    <div class="score-text">${group.score}/20 分</div>
+                    <div class="score-text">${group.score}/10 分</div>
                     <div class="controls">
                         <button onclick="changeScore(${index}, 1)">
                             <i class="fas fa-plus"></i>
@@ -385,7 +385,7 @@
 
         function changeScore(index, delta) {
             let newScore = groups[index].score + delta;
-            newScore = Math.max(0, Math.min(20, newScore));
+            newScore = Math.max(0, Math.min(10, newScore));
             if(newScore !== groups[index].score) {
                 // 保存之前的排名情况
                 const prevRanks = getRankPositions();
@@ -496,7 +496,7 @@
             const value = parseInt(document.getElementById('batchValue').value);
             const prevTopThree = [...groups].sort((a, b) => b.score - a.score).slice(0, 3).map(g => g.name);
             
-            groups.forEach(g => g.score = Math.min(20, g.score + value));
+            groups.forEach(g => g.score = Math.min(10, g.score + value));
             
             // 播放短促的加分音效
             const sound = document.getElementById('addPointSound');
