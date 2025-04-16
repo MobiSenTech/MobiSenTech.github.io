@@ -62,7 +62,7 @@
         }
         .groups {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 30px;
             margin-top: 30px;
         }
@@ -349,7 +349,7 @@
         document.body.style.backgroundSize = 'cover';
         document.body.style.backgroundPosition = 'center';
 
-        let groups = JSON.parse(localStorage.getItem('groups')) || Array(4).fill().map((_,i) => ({
+        let groups = JSON.parse(localStorage.getItem('groups')) || Array(3).fill().map((_,i) => ({
             name: `第 ${i+1} 组`,
             score: 0,
             students: []
@@ -357,8 +357,10 @@
 
         function initGroups() {
             const container = document.getElementById('groups');
-            container.innerHTML = groups.map((group, index) => {
-                const percentage = (group.score / 10 * 100).toFixed(1);
+            // 确保只显示前三组
+            const displayGroups = groups.slice(0, 3);
+            container.innerHTML = displayGroups.map((group, index) => {
+                const percentage = (group.score / 20 * 100).toFixed(1);
                 return `
                 <div class="group">
                     <h2>${group.name}</h2>
@@ -367,7 +369,7 @@
                             <i class="fas fa-futbol football"></i>
                         </div>
                     </div>
-                    <div class="score-text">${group.score}/10 分</div>
+                    <div class="score-text">${group.score}/20 分</div>
                     <div class="controls">
                         <button onclick="changeScore(${index}, 1)">
                             <i class="fas fa-plus"></i>
@@ -385,7 +387,7 @@
 
         function changeScore(index, delta) {
             let newScore = groups[index].score + delta;
-            newScore = Math.max(0, Math.min(10, newScore));
+            newScore = Math.max(0, Math.min(20, newScore));
             if(newScore !== groups[index].score) {
                 // 保存之前的排名情况
                 const prevRanks = getRankPositions();
@@ -496,7 +498,7 @@
             const value = parseInt(document.getElementById('batchValue').value);
             const prevTopThree = [...groups].sort((a, b) => b.score - a.score).slice(0, 3).map(g => g.name);
             
-            groups.forEach(g => g.score = Math.min(10, g.score + value));
+            groups.forEach(g => g.score = Math.min(20, g.score + value));
             
             // 播放短促的加分音效
             const sound = document.getElementById('addPointSound');
@@ -597,6 +599,26 @@
             `;
         }
 
+        // 修改页面加载函数，保留之前的数据
+        window.onload = function() {
+            // 检查是否已有保存的组数据
+            if (!localStorage.getItem('groups')) {
+                // 只有在没有保存数据时才初始化为三个组
+                groups = Array(3).fill().map((_,i) => ({
+                    name: `第 ${i+1} 组`,
+                    score: 0,
+                    students: []
+                }));
+                
+                saveAndUpdate();
+            } else {
+                // 如果有保存的数据，从localStorage加载
+                groups = JSON.parse(localStorage.getItem('groups')) || [];
+                initGroups();
+            }
+        };
+
+        // 初始化组显示
         initGroups();
     </script>
 </body>
